@@ -129,7 +129,9 @@ public:
 				{
 					if (curNode->left != lastNode && curNode != lastNode)
 					{
-						if (curDict->Compare(curNode->key, curNode->left->key) > 0 && curDict->Compare(curNode->parent->key, curNode->left->key) < 0)
+						if (curDict->Compare(curNode->key, curNode->left->key) > 0 
+							&& curNode->parent != nullptr 
+							&& curDict->Compare(curNode->parent->key, curNode->left->key) < 0 )
 						{
 							lastNode = curNode; //запоминаю последнюю ноду до ухода влево
 							curNode = curDict->GetLeftmostNode(curNode);
@@ -141,7 +143,38 @@ public:
 
 		void Prev()
 		{
-
+			if (HasPrev())
+			{
+				if (curNode->left != nullptr)
+				{
+					if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0)
+						lastNode = curNode; // запоминаю последнюю ноду до ухода вправо
+					//auto tmp = curNode;
+					curNode = curNode->left;
+					//curNode->parent = tmp;
+				}
+				else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0)
+				{
+					curNode = curNode->parent;
+				}
+				else if (curDict->Compare(curNode->parent->key, curNode->key) > 0 && lastNode->parent != nullptr)
+				{
+					curNode = lastNode->parent;
+				}
+				if (curNode->right != nullptr)
+				{
+					if (curNode->right != lastNode && curNode != lastNode)
+					{
+						if (curDict->Compare(curNode->key, curNode->right->key) < 0 
+							&& curNode->parent != nullptr
+							&& curDict->Compare(curNode->parent->key, curNode->right->key) > 0)
+						{
+							lastNode = curNode; //запоминаю последнюю ноду до ухода влево
+							curNode = curDict->GetRightmostNode(curNode);
+						}
+					}
+				}
+			}
 		}
 
 		bool HasNext() const
@@ -155,6 +188,7 @@ public:
 				return true;
 			}
 			else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0 
+					&& lastNode != nullptr 
 					&& lastNode->parent != nullptr && curDict->Compare(lastNode->parent->key, lastNode->key) > 0)
 			{
 				return true;
@@ -165,7 +199,22 @@ public:
 
 		bool HasPrev() const
 		{
+			if (curNode->left != nullptr)//в любом случае есть следующий
+			{
+				return true;
+			}
+			if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0)
+			{
+				return true;
+			}
+			else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) > 0
+				&& lastNode != nullptr
+				&& lastNode->parent != nullptr && curDict->Compare(lastNode->parent->key, lastNode->key) < 0)
+			{
+				return true;
+			}
 
+			return false;
 		}		
 	};
 
@@ -363,13 +412,24 @@ public:
 		return x->key;		
 	}
 
-	Node* GetLeftmostNode(Node* curNode) // самая левая нода в дереве
+	Node* GetLeftmostNode(Node* curNode) // самая левая нода в поддереве
 	{
 		while (curNode->left != nullptr)
 		{
 			auto tmp = curNode;
 			curNode = curNode->left;
 			curNode->parent = tmp;
+		}
+		return curNode;
+	}
+
+	Node* GetRightmostNode(Node* curNode) // самая правая нода в поддереве
+	{
+		while (curNode->right != nullptr)
+		{
+			//auto tmp = curNode;
+			curNode = curNode->right;
+			//curNode->parent = tmp;
 		}
 		return curNode;
 	}
