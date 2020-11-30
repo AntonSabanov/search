@@ -33,39 +33,39 @@ class Dictionary final
 private:
 	int size;
 
-	class Node
+class Node
+{
+public:
+	K key;
+	V val;
+	bool color;
+
+	Node(K key, V val, bool color)
 	{
-	public:
-		K key;
-		V val;
-		bool color;
+		this->key = key;
+		this->val = val;
+		this->color = color;
+	}
 
-		Node(K key, V val, bool color)
-		{
-			this->key = key;
-			this->val = val;
-			this->color = color;
-		}
+	Node() {} // конструктор для инициализации значений по умолчанию
 
-		Node() {} // конструктор для инициализации значений по умолчанию
+/*	~Node()
+	{
+		this->key = key;
+		this->val = val;
+		this->color = color;
+	}*/
 
-	/*	~Node()
-		{
-			this->key = key;
-			this->val = val;
-			this->color = color;
-		}*/
-
-		Node* left = nullptr;
-		Node* right = nullptr;
-		//Node* parent = nullptr;
-	};
+	Node* left = nullptr;
+	Node* right = nullptr;
+	Node* parent = nullptr; // поле для итерации
+};
 
 public:
 	bool red = true;
 	bool black = false;
 	Node* root = nullptr;
-	//Node* lastParent = nullptr;
+	//Node* lastNode = nullptr;
 	//int size;
 
 	class Iterator
@@ -74,6 +74,7 @@ public:
 		//int curNodeIndex; // текущее положение итератора
 		Dictionary<K, V>* curDict;
 		Node* curNode = nullptr;
+		Node* lastNode = nullptr;
 	public:
 		Iterator(Dictionary<K, V>* iterated)
 		{
@@ -81,6 +82,13 @@ public:
 			this->curNode = iterated->GetLeftmostNode(iterated->root);//iterated->root; // отсчет с самой левой ноды
 			//curChunkIndex = 0;
 		}
+
+		//int Compare(const K& key1, const K& key2)
+		//{
+		//	if (key1 == key2) return 0;
+		//	else if (key1 > key2) return 1;
+		//	else if (key1 < key2) return -1;
+		//}
 
 		const K& Key() const
 		{
@@ -97,22 +105,73 @@ public:
 			curNode->val = value;
 		}
 
-		void next()
+		void Next()
+		{
+			if (HasNext())
+			{
+				if (curNode->right != nullptr)
+				{
+					if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) > 0)
+						lastNode = curNode; // запоминаю последнюю ноду до ухода вправо
+					auto tmp = curNode;
+					curNode = curNode->right;
+					curNode->parent = tmp;
+				}
+				else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) > 0)
+				{
+					curNode = curNode->parent;
+				}
+				else if (curDict->Compare(curNode->parent->key, curNode->key) < 0 && lastNode->parent != nullptr)
+				{
+					curNode = lastNode->parent;
+				}
+				//if (curNode->left != nullptr && curNode->left != lastNode && curDict->Compare(curNode->key, curNode->left->key) < 0)
+				if (curNode->left != nullptr)
+				{
+					if (curNode->left != lastNode && curNode != lastNode)
+					{
+						if (curDict->Compare(curNode->key, curNode->left->key) > 0 && curDict->Compare(curNode->parent->key, curNode->left->key) < 0)
+						{
+							lastNode = curNode; //запоминаю последнюю ноду до ухода влево
+							curNode = curDict->GetLeftmostNode(curNode);
+						}
+					}
+				}
+			}
+		}
+
+		void Prev()
 		{
 
 		}
 
-		void prev()
+		bool HasNext() const
 		{
+			/*if (curNode->left != nullptr)
+			{
+				lastNode = curNode;
+				curNode = GetLeftmostNode(curNode);
+			}*/
+			if (curNode->right != nullptr)//в любом случае есть следующий
+			{
+				return true;
+			}
+			if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) > 0)
+			{
+				return true;
+			}
+			else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0 
+					&& lastNode->parent != nullptr && curDict->Compare(lastNode->parent->key, lastNode->key) > 0)
+			{
+				return true;
+			}
 
-		}
-
-		bool hasNext() const
-		{
+			return false;
+				
 			//return ((curNode->right != nullptr) || ()
 		}
 
-		bool hasPrev() const
+		bool HasPrev() const
 		{
 
 		}		
@@ -315,7 +374,11 @@ public:
 	Node* GetLeftmostNode(Node* curNode) // самая левая нода в дереве
 	{
 		while (curNode->left != nullptr)
+		{
+			auto tmp = curNode;
 			curNode = curNode->left;
+			curNode->parent = tmp;
+		}
 		return curNode;
 	}
 
