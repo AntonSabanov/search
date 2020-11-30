@@ -124,8 +124,7 @@ public:
 				else if (curDict->Compare(curNode->parent->key, curNode->key) < 0 && lastNode->parent != nullptr)
 				{
 					curNode = lastNode->parent;
-				}
-				//if (curNode->left != nullptr && curNode->left != lastNode && curDict->Compare(curNode->key, curNode->left->key) < 0)
+				}				
 				if (curNode->left != nullptr)
 				{
 					if (curNode->left != lastNode && curNode != lastNode)
@@ -147,11 +146,6 @@ public:
 
 		bool HasNext() const
 		{
-			/*if (curNode->left != nullptr)
-			{
-				lastNode = curNode;
-				curNode = GetLeftmostNode(curNode);
-			}*/
 			if (curNode->right != nullptr)//в любом случае есть следующий
 			{
 				return true;
@@ -167,8 +161,6 @@ public:
 			}
 
 			return false;
-				
-			//return ((curNode->right != nullptr) || ()
 		}
 
 		bool HasPrev() const
