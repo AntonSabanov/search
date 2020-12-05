@@ -17,7 +17,6 @@ public:
 
 TEST(TestCaseName, TestName) 
 {
-	//Dictionary<int, int> test;
 	EXPECT_EQ(1, 1);
 	EXPECT_TRUE(true);
 }
@@ -65,8 +64,6 @@ TEST(Size_Test, IntKey_IntVal)
 	test.Put(2, 12);
 	EXPECT_EQ(test.Size(), 3);
 }
-
-
 
 TEST(Contains_Test, IntKey_IntVal)
 {

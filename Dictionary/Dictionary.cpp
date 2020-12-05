@@ -3,30 +3,6 @@
 #include <cstring>
 #include <cassert>
 
-//public class BST<Key extends Comparable<Key>, Value>
-//{
-//	private static final boolean RED = true;
-//	private static final boolean BLACK = false;
-//	private Node root;
-//	private class Node
-//	{
-//		Key key;
-//		Value val;
-//		Node left, right;
-//		boolean color;
-//		Node(Key key, Value val, boolean color)
-//		{
-//			this.key = key;
-//			this.val = val;
-//			this.color = color;
-//		}
-//	}
-//	public Value get(Key key)
-//		// Search method.
-//		public void put(Key key, Value val)
-//		// Insert method.
-//}
-
 template <typename K, typename V>
 class Dictionary final
 {
@@ -49,13 +25,6 @@ public:
 
 	Node() {} // конструктор дл€ инициализации значений по умолчанию
 
-/*	~Node()
-	{
-		this->key = key;
-		this->val = val;
-		this->color = color;
-	}*/
-
 	Node* left = nullptr;
 	Node* right = nullptr;
 	Node* parent = nullptr; // поле дл€ итерации
@@ -65,13 +34,10 @@ public:
 	bool red = true;
 	bool black = false;
 	Node* root = nullptr;
-	//Node* lastNode = nullptr;
-	//int size;
 
 	class Iterator
 	{
 	private:
-		//int curNodeIndex; // текущее положение итератора
 		Dictionary<K, V>* curDict;
 		Node* curNode = nullptr;
 		Node* lastNode = nullptr;
@@ -79,16 +45,8 @@ public:
 		Iterator(Dictionary<K, V>* iterated)
 		{
 			this->curDict = iterated;
-			this->curNode = iterated->GetLeftmostNode(iterated->root);//iterated->root; // отсчет с самой левой ноды
-			//curChunkIndex = 0;
+			this->curNode = iterated->GetLeftmostNode(iterated->root); // отсчет с самой левой ноды
 		}
-
-		//int Compare(const K& key1, const K& key2)
-		//{
-		//	if (key1 == key2) return 0;
-		//	else if (key1 > key2) return 1;
-		//	else if (key1 < key2) return -1;
-		//}
 
 		const K& Key() const
 		{
@@ -149,9 +107,7 @@ public:
 				{
 					if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0)
 						lastNode = curNode; // запоминаю последнюю ноду до ухода вправо
-					//auto tmp = curNode;
 					curNode = curNode->left;
-					//curNode->parent = tmp;
 				}
 				else if (curNode->parent != nullptr && curDict->Compare(curNode->parent->key, curNode->key) < 0)
 				{
@@ -220,9 +176,6 @@ public:
 
 	Dictionary()
 	{
-		//root = (Node*)malloc(sizeof(Node));
-		//root;
-		//root = nullptr;
 		root = new Node();
 		size = 0;
 	}
@@ -295,9 +248,6 @@ public:
 
 		int cmp;		
 		cmp = Compare(key, h->key);					//сравнение ключа текущей ноды и переданного
-		/*if (key == h->key) cmp = 0; 
-		else if (key > h->key) cmp = 1; 
-		else if (key < h->key) cmp = -1;*/
 
 		if (cmp == 0)	                            // если они совпадают, то значение просто замен€етс€
 			h->val = val;
@@ -344,13 +294,11 @@ public:
 			if (cmp == 0)
 			{
 				h->key = Min(h->right);//
-				//h->val = Get(h->right, h->key);//
 				h->val = Find(h->key, h->right)->val;//
 				h->right = DeleteMin(h->right);//
 				delete h;
 			}
 			else h->right = Delete(h->right, key);
-			//delete h;
 		}
 		return FixUp(h);//
 	}
@@ -427,37 +375,17 @@ public:
 	{
 		while (curNode->right != nullptr)
 		{
-			//auto tmp = curNode;
 			curNode = curNode->right;
-			//curNode->parent = tmp;
 		}
 		return curNode;
 	}
-
-	//V& Get(Node* x, K key)
-	//{
-	//	while (x != nullptr)
-	//	{
-	//		int cmp = (key, x->key);
-	//		if (cmp == 0) 
-	//			return x->val;
-	//		else if (cmp < 0) 
-	//			x = x->left;
-	//		else if (cmp > 0) 
-	//			x = x->right;
-	//	}
-	//}
 
 	Node* Find(const K& key, Node* curNode)
 	{
 		while (curNode != nullptr)
 		{
-			int cmpResult;									//добавить сравнение с ключом
+			int cmpResult;									
 			cmpResult = Compare(key, curNode->key);
-			//if (key == curNode->key) cmpResult = 0;
-			//else if (key > curNode->key) cmpResult = 1;
-			//else if (key < curNode->key) cmpResult = -1;
-			//int cmpResult = strcmp(key, curNode->key);
 
 			if (cmpResult == 0)
 				return curNode;
@@ -487,7 +415,6 @@ void Dictionary<K, V>::Put(const K& key, const V& val) //ƒобавл€ет переданную па
 {
 	if (size == 0)
 	{
-		//root = new Node(key, val, red);
 		root->key = key;
 		root->val = val;
 		root->color = red;
@@ -498,67 +425,6 @@ void Dictionary<K, V>::Put(const K& key, const V& val) //ƒобавл€ет переданную па
 	{
 		root = Insert(root, key, val);
 	}
-		
-	//Node* curNode = root;
-	//
-	//
-	//int cmp; //= key.compareTo(curNode->key);//сравнение ключа текущей ноды и переданного
-	//if (key == curNode->key) cmp = 0; else if (key > curNode->key) cmp = 1; else if (key < curNode->key) cmp = -1;
-	//
-	//if (cmp == 0)	// если они совпадают, то значение просто замен€етс€
-	//{
-	//	curNode->val = val;
-	//	return;
-	//}
-	//else if (cmp < 0) // если меньше, то идем в левое поддерево
-	//{
-	//	if (curNode->left == nullptr)
-	//	{
-	//		curNode->left = new Node(key, val, red);
-	//		//curNode->left->parent = curNode;
-	//		break;
-	//	}
-	//	else
-	//	{
-	//		curNode = curNode->left;
-	//	}
-	//}
-	//else // если больше, то идем в правое поддерево
-	//{
-	//	if (curNode->right == nullptr)
-	//	{
-	//		curNode->right = new Node(key, val, red);
-	//		//curNode->right->parent = curNode;
-	//		break;
-	//	}
-	//	else
-	//	{
-	//		curNode = curNode->right;
-	//	}
-	//}
-	////curNode = new Node(key, val, red); // красный или черный?
-	//
-	//if (curNode->right != nullptr && IsRed(curNode->right))
-	//{
-	//	curNode = RotateLeft(curNode);
-	//	//auto temp = curNode->parent;
-	//	//curNode->parent = curNode->left->parent;
-	//	//curNode->left->parent = curNode;		
-	//}
-	//	
-	//
-	////if (curNode->left != nullptr && curNode->left->left != nullptr && IsRed(curNode->left) && IsRed(curNode->left->left))//
-	////	curNode = RotateRight(curNode);
-	////if (curNode->left != nullptr && curNode->parent != nullptr && IsRed(curNode->parent) && IsRed(curNode->left))//
-	////	curNode = RotateRight(curNode);
-	//if (curNode->left != nullptr && lastParent != nullptr && IsRed(curNode->left) && IsRed(lastParent))//
-	//	curNode = RotateRight(lastParent);
-	//
-	//if (curNode->right != nullptr && curNode->left != nullptr && IsRed(curNode->left) && IsRed(curNode->right))
-	//	ColorFlip(curNode);//
-	//
-	//lastParent = curNode;
-	
 }
 
 template <typename K, typename V>
@@ -582,41 +448,17 @@ bool Dictionary<K, V>::Contains(const K& key) //¬озвращает true , если в ассоциа
 		curNode = root;
 	else
 		return false;
-
-	//while (curNode != nullptr)
-	//{
-	//	int cmpResult;					//добавить сравнение с ключом
-	//	if (key == curNode->key) cmpResult = 0;
-	//	else if (key > curNode->key) cmpResult = 1;
-	//	else if (key < curNode->key) cmpResult = -1;
-	//	//int cmpResult = strcmp(key, curNode->key);
-	//
-	//	if (cmpResult == 0)
-	//		return true;
-	//	else if (cmpResult < 0)
-	//		curNode = curNode->left;
-	//	else if (cmpResult > 0)
-	//		curNode = curNode->right;
-	//}
-	//return false;
 	
 	if (Find(key, curNode) != nullptr)
 		return true;
 	else
 		return false;
+}
 
-	//public Value get(Key key)
-	//{
-	//	Node x = root;
-	//	while (x != null)
-	//	{
-	//		int cmp = key.compareTo(x.key);
-	//		if (cmp == 0) return x.val;
-	//		else if (cmp < 0) x = x.left;
-	//		else if (cmp > 0) x = x.right;
-	//	}
-	//	return null;
-	//}
+template <typename K, typename V>
+int Dictionary<K, V>::Size() const //¬озвращает текущий размер (количество реально существующих в ассоциативном массиве элементов).
+{
+	return size;
 }
 
 template <typename K, typename V>
@@ -653,15 +495,4 @@ V& Dictionary<K, V>::operator[](const K& key)
 	}
 }
 
-template <typename K, typename V>
-int Dictionary<K, V>::Size() const //¬озвращает текущий размер (количество реально существующих в ассоциативном массиве элементов).
-{
-	return size;
-}
 
-//template <typename K, typename V>
-//Dictionary<K, V>::Iterator Dictionary<K, V>::GetIterator()
-//{
-//	Iterator iterator(this);
-//	return iterator;
-//}
